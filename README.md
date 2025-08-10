@@ -1,2 +1,14 @@
-# Mark
-Mark is your one-stop-shop for all your study needs. It has a built-in AI study buddy, that you can use to study different topics. Mark also includes: custom &amp; preset quizes, themes, note taking, progression tracking, mini games for subjects such as maths, a wide range of subjects to study and more.
+# Run and deploy your AI Studio app
+
+This contains everything you need to run your app locally.
+
+## Run Locally
+
+**Prerequisites:**  Node.js
+
+
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`
