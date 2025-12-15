@@ -1,0 +1,9 @@
+{
+  "name": "Mark: Study & Quiz App",
+  "description": "A study-focused app for students that lets them test themselves, build quizzes, and track their progress with AI-powered insights.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "prompt": ""
+}
