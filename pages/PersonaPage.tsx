@@ -40,7 +40,6 @@ export const PersonaPage: React.FC<{ isUpdateMode?: boolean }> = ({ isUpdateMode
                 proficiencies: user.proficiencies,
                 teachingSubject: user.teachingSubject
             });
-            // Skip role question if updating
             setStep(1); 
         }
     }, [isUpdateMode, user]);
@@ -50,16 +49,13 @@ export const PersonaPage: React.FC<{ isUpdateMode?: boolean }> = ({ isUpdateMode
         const newAnswers = { ...answers, [key]: value };
         setAnswers(newAnswers);
         
-        // Special logic for role selection
         if (key === 'role' && value === 'teacher') {
-            // Find the teacher subject step and jump to it
             const teacherStepIndex = questions(value).findIndex(q => q.id === 'teacher-subject');
             if (teacherStepIndex !== -1) {
                 setStep(teacherStepIndex);
                 return;
             }
         }
-
         handleNextStep(newAnswers);
     };
 
@@ -80,7 +76,8 @@ export const PersonaPage: React.FC<{ isUpdateMode?: boolean }> = ({ isUpdateMode
             updateUser(finalAnswers);
             navigate('/');
         } else {
-            navigate('/device-selection', { state: finalAnswers });
+            // UPDATED: Skip device selection
+            navigate('/login', { state: finalAnswers });
         }
     };
 
@@ -92,11 +89,9 @@ export const PersonaPage: React.FC<{ isUpdateMode?: boolean }> = ({ isUpdateMode
     const handleGoBack = () => {
         playSound('swoosh');
         if (step > (isUpdateMode ? 1 : 0)) {
-            // If we are on the teacher subject step, go back to role selection
             if (questions(answers.role!)[step].id === 'teacher-subject') {
-                if(isUpdateMode) {
-                    navigate('/'); // Can't change role in update mode easily
-                } else {
+                if(isUpdateMode) navigate('/');
+                else {
                     setStep(0);
                     setAnswers(a => ({...a, role: undefined, teachingSubject: undefined}));
                 }
@@ -104,11 +99,8 @@ export const PersonaPage: React.FC<{ isUpdateMode?: boolean }> = ({ isUpdateMode
                 setStep(s => s - 1);
             }
         } else {
-            if(isUpdateMode) {
-                navigate('/');
-            } else {
-                navigate('/welcome');
-            }
+            if(isUpdateMode) navigate('/');
+            else navigate('/welcome');
         }
     }
     
@@ -119,11 +111,11 @@ export const PersonaPage: React.FC<{ isUpdateMode?: boolean }> = ({ isUpdateMode
             title: "First, who are you?",
             render: () => (
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <button onClick={() => handleAnswerAndAdvance('role', 'student')} className="w-full p-6 text-lg font-semibold bg-bg-light dark:bg-bg-dark rounded-xl shadow-md transition-all transform hover:scale-105 hover:bg-primary-light/10 flex flex-col items-center gap-2">
+                    <button onClick={() => handleAnswerAndAdvance('role', 'student')} className="w-full p-6 text-lg font-semibold bg-bg-light dark:bg-bg-dark border border-border-light dark:border-border-dark rounded-xl shadow-md transition-all transform hover:scale-105 hover:bg-primary-light/10 flex flex-col items-center gap-2 text-text-light dark:text-text-dark">
                         <span className="text-4xl">🎓</span>
                         <span>Student</span>
                     </button>
-                    <button onClick={() => handleAnswerAndAdvance('role', 'teacher')} className="w-full p-6 text-lg font-semibold bg-bg-light dark:bg-bg-dark rounded-xl shadow-md transition-all transform hover:scale-105 hover:bg-primary-light/10 flex flex-col items-center gap-2">
+                    <button onClick={() => handleAnswerAndAdvance('role', 'teacher')} className="w-full p-6 text-lg font-semibold bg-bg-light dark:bg-bg-dark border border-border-light dark:border-border-dark rounded-xl shadow-md transition-all transform hover:scale-105 hover:bg-primary-light/10 flex flex-col items-center gap-2 text-text-light dark:text-text-dark">
                         <span className="text-4xl">🍎</span>
                         <span>Teacher / Parent</span>
                     </button>
@@ -156,10 +148,10 @@ export const PersonaPage: React.FC<{ isUpdateMode?: boolean }> = ({ isUpdateMode
             {
                 id: 'student-finish',
                 icon: '🎯',
-                title: isUpdateMode ? "Profile Updated!" : "Awesome! Ready to crush your goals?",
+                title: isUpdateMode ? "Profile Updated!" : "Almost there!",
                 render: () => (
                     <div className="flex justify-center">
-                        <button onClick={() => finishPersona(answers)} className="w-full md:w-auto p-4 px-8 text-lg font-semibold bg-gradient-to-r from-primary-light to-secondary-light text-white rounded-xl shadow-md transition-all transform hover:scale-105 hover:shadow-xl">{isUpdateMode ? "Save Changes" : "Let's do this!"}</button>
+                        <button onClick={() => finishPersona(answers)} className="w-full md:w-auto p-4 px-8 text-lg font-semibold bg-gradient-to-r from-primary-light to-secondary-light text-white rounded-xl shadow-md transition-all transform hover:scale-105 hover:shadow-xl">{isUpdateMode ? "Save Changes" : "Let's Go!"}</button>
                     </div>
                 )
             }
@@ -186,7 +178,7 @@ export const PersonaPage: React.FC<{ isUpdateMode?: boolean }> = ({ isUpdateMode
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-bg-light dark:bg-bg-dark text-text-light dark:text-text-dark font-sans p-4">
-            <div className="w-full max-w-2xl mx-auto card-stable">
+            <div className="w-full max-w-2xl mx-auto">
                 <div className="bg-card-light dark:bg-card-dark p-8 md:p-12 rounded-3xl shadow-2xl relative flex flex-col min-h-[400px]">
                     <div className="mb-8">
                         <ProgressBar current={step + 1} total={totalSteps} />
@@ -194,7 +186,7 @@ export const PersonaPage: React.FC<{ isUpdateMode?: boolean }> = ({ isUpdateMode
                     
                     <div className="flex-grow flex flex-col justify-center">
                         {currentQuestion && (
-                            <div key={step} className="w-full text-center animate-fade-in-down">
+                            <div key={step} className="w-full text-center animate-fade-in">
                                 <div className="text-6xl mb-6 animate-float">{currentQuestion.icon}</div>
                                 <h2 className="text-3xl font-bold mb-8">{currentQuestion.title}</h2>
                                 {currentQuestion.render()}

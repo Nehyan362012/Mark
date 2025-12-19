@@ -5,14 +5,15 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import { NotificationContext } from '../contexts/NotificationContext';
 import { SoundContext } from '../contexts/SoundContext';
 import { ICONS, PAPER_STYLES, SUBJECTS } from '../constants';
+import { NoteContextType, ThemeContextType, NotificationContextType, SoundContextType } from '../types';
 
 export const NoteEditorPage: React.FC = () => {
     const { noteId } = useParams<{ noteId: string }>();
     const navigate = useNavigate();
-    const { getNoteById, addNote, updateNote } = useContext(NoteContext)!;
-    const { paperStyle, setPaperStyle } = useContext(ThemeContext)!;
-    const { addToast } = useContext(NotificationContext)!;
-    const { playSound } = useContext(SoundContext)!;
+    const { getNoteById, addNote, updateNote } = useContext(NoteContext) as NoteContextType;
+    const { paperStyle, setPaperStyle } = useContext(ThemeContext) as ThemeContextType;
+    const { addToast } = useContext(NotificationContext) as NotificationContextType;
+    const { playSound } = useContext(SoundContext) as SoundContextType;
 
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');

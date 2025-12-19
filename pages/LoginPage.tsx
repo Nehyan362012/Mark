@@ -1,5 +1,4 @@
 
-
 import React, { useState, useContext, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
@@ -50,6 +49,7 @@ export const LoginPage: React.FC = () => {
                 birthDate,
                 ...personaData 
             });
+            navigate('/');
         }
     };
 

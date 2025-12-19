@@ -1,19 +1,3 @@
-
-<script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react-router-dom": "https://esm.sh/react-router-dom@^7.10.1",
-    "@google/genai": "https://esm.sh/@google/genai@^1.33.0",
-    "recharts": "https://esm.sh/recharts@^3.6.0",
-    "howler": "https://esm.sh/howler@^2.2.4",
-    "react-dom": "https://esm.sh/react-dom@^19.2.3"
-  }
-}
-</script>
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -25,28 +9,42 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Roboto+Mono:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@^19.2.3",
+        "react-dom": "https://esm.sh/react-dom@^19.2.3",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+        "react/": "https://esm.sh/react@^19.2.3/",
+        "react-router-dom": "https://esm.sh/react-router-dom@^6.22.3",
+        "@google/genai": "https://esm.sh/@google/genai@^1.33.0",
+        "recharts": "https://esm.sh/recharts@^3.6.0",
+        "howler": "https://esm.sh/howler@^2.2.4"
+      }
+    }
+    </script>
     <style>
       :root {
         --hue-primary: 257;
         --hue-secondary: 283;
         
-        /* Light Theme */
+        /* Fixed Light Theme Variables */
         --color-primary-light: hsl(var(--hue-primary), 80%, 50%);
         --color-secondary-light: hsl(var(--hue-secondary), 80%, 60%);
         --color-bg-light: #F8FAFC;
         --color-card-light: #FFFFFF;
-        --color-text-light: #0F172A;
+        --color-text-light: #0F172A; /* Dark text for light mode */
         --color-subtle-light: #64748B;
         --color-border-light: #E2E8F0;
 
-        /* Dark Theme */
-        --dark-l-base: 15%;
-        --dark-l-offset: 0%; /* Slider will change this */
+        /* Dark Theme Variables */
+        --dark-l-base: 10%;
+        --dark-l-offset: 0%; 
         --color-primary-dark: hsl(var(--hue-primary), 70%, 70%);
         --color-secondary-dark: hsl(var(--hue-secondary), 70%, 75%);
         --color-bg-dark: hsl(222, 25%, calc(var(--dark-l-base) - var(--dark-l-offset)));
         --color-card-dark: hsl(222, 25%, calc(var(--dark-l-base) + 5% - var(--dark-l-offset)));
-        --color-text-dark: #E2E8F0;
+        --color-text-dark: #F1F5F9; /* Light text for dark mode */
         --color-subtle-dark: #94A3B8;
         --color-border-dark: hsl(215, 20%, calc(var(--dark-l-base) + 15% - var(--dark-l-offset)));
 
@@ -68,21 +66,18 @@
       html.theme-matrix { --hue-primary: 140; --hue-secondary: 150; }
       html.theme-sunrise { --hue-primary: 40; --hue-secondary: 15; }
 
-
-      html.dark {
-        --color-bg-light: var(--color-bg-dark);
-        --color-card-light: var(--color-card-dark);
-        --color-text-light: var(--color-text-dark);
-        --color-subtle-light: var(--color-subtle-dark);
-        --color-border-light: var(--color-border-dark);
-      }
-      
       body {
         background-color: var(--color-bg-light);
+        color: var(--color-text-light); /* Base text color */
+        transition: background-color 0.3s ease, color 0.3s ease;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%239C92AC' fill-opacity='0.03' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
       }
 
-      /* Note Content Styles - Fix for Tailwind Reset */
+      html.dark body {
+        background-color: var(--color-bg-dark);
+        color: var(--color-text-dark);
+      }
+
       .note-content h1 { font-size: 2.25em; font-weight: 800; margin-top: 0.8em; margin-bottom: 0.4em; line-height: 1.2; }
       .note-content h2 { font-size: 1.75em; font-weight: 700; margin-top: 0.8em; margin-bottom: 0.4em; line-height: 1.3; }
       .note-content h3 { font-size: 1.5em; font-weight: 600; margin-top: 0.8em; margin-bottom: 0.4em; line-height: 1.4; }
@@ -91,22 +86,15 @@
       .note-content ol { list-style-type: decimal; padding-left: 1.5em; margin-bottom: 0.8em; }
       .note-content blockquote { border-left: 4px solid var(--color-primary-light); padding-left: 1em; font-style: italic; opacity: 0.8; margin-bottom: 1em; }
       
-      /* Hide Scrollbar Globally but keep functionality */
       * {
-        scrollbar-width: none; /* Firefox */
-        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;
+        -ms-overflow-style: none;
       }
       
       *::-webkit-scrollbar {
-        display: none; /* Chrome, Safari, Opera */
+        display: none;
       }
       
-      /* Stability Classes */
-      .card-stable {
-        min-width: 280px; /* Prevent cards from becoming too narrow */
-      }
-      
-      /* Paper styles for Notes */
       .paper-default { background-color: #ffffff; }
       html.dark .paper-default { background-color: hsl(222, 25%, calc(var(--dark-l-base) + 2% - var(--dark-l-offset))); }
       
@@ -115,18 +103,6 @@
       
       .paper-grid { background-color: #fff; background-size: 20px 20px; background-image: linear-gradient(to right, #e2e8f0 1px, transparent 1px), linear-gradient(to bottom, #e2e8f0 1px, transparent 1px); }
       html.dark .paper-grid { background-color: hsl(222, 25%, calc(var(--dark-l-base) + 2% - var(--dark-l-offset))); background-image: linear-gradient(to right, hsl(215, 20%, calc(var(--dark-l-base) + 10% - var(--dark-l-offset))) 1px, transparent 1px), linear-gradient(to bottom, hsl(215, 20%, calc(var(--dark-l-base) + 10% - var(--dark-l-offset))) 1px, transparent 1px); }
-      
-      .paper-dotted { background: #fff; background-image: radial-gradient(#d1d5db 1px, transparent 0); background-size: 20px 20px; background-position: -10px -10px; }
-      html.dark .paper-dotted { background-color: hsl(222, 25%, calc(var(--dark-l-base) + 2% - var(--dark-l-offset))); background-image: radial-gradient(hsl(215, 20%, calc(var(--dark-l-base) + 15% - var(--dark-l-offset))) 1px, transparent 0); }
-
-      .paper-vintage { background-color: #fdf5e6; background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d2b48c' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
-      html.dark .paper-vintage { background-color: #4a4132; background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d2b48c' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
-      
-      .paper-blueprint { background-color: #27406a; background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 2rem 2rem; line-height: 2rem; color: #fff; }
-      html.dark .paper-blueprint { background-color: #1a2a44; }
-
-      .paper-blackboard { background-color: #343434; background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23555555' fill-opacity='0.2'%3E%3Cpath d='M50 50c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c-5.523 0-10-4.477-10-10zM10 10c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c-5.523 0-10-4.477-10-10z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); color: #fff; }
-      html.dark .paper-blackboard { background-color: #1e1e1e; }
       
       .confetti {
         position: absolute;
@@ -139,64 +115,9 @@
         animation-fill-mode: forwards;
       }
 
-      /* Page Transitions */
-      .page-content-wrapper {
-        animation: slide-in-up 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-      }
-
-      /* Mobile Optimizations - Global Scaling */
-      @media (max-width: 640px) {
-        html {
-          font-size: 14px; /* Scale down everything slightly */
-        }
-      }
-
-      html[data-platform="phone"] body {
-        -webkit-text-size-adjust: 100%;
-      }
-      html[data-platform="phone"] .main-content-padding {
-        padding: 0.75rem; 
-      }
-      /* Sidebar on mobile */
-      html[data-platform="phone"] aside {
-        width: 85vw;
-        max-width: 300px;
-      }
-      html[data-platform="phone"] h1 { font-size: 1.5rem; }
-      html[data-platform="phone"] h2 { font-size: 1.2rem; }
-      html[data-platform="phone"] h3 { font-size: 1rem; }
-      
-      /* Card adjustments & Grids */
-      html[data-platform="phone"] .notes-grid,
-      html[data-platform="phone"] .control-panel-grid,
-      html[data-platform="phone"] .puzzle-grid,
-      html[data-platform="phone"] .community-grid {
-         grid-template-columns: 1fr;
-      }
-      html[data-platform="phone"] .achievements-grid {
-         grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-       /* Quiz Page mobile */
-      html[data-platform="phone"] .quiz-page-container {
-        padding: 0.5rem;
-      }
-      /* Two-column generator pages */
-      html[data-platform="phone"] .generator-layout {
-        flex-direction: column;
-        max-height: none;
-        height: auto;
-      }
-       html[data-platform="phone"] .generator-layout > div {
-        overflow-y: visible;
-        max-height: none;
-      }
-       /* Modals on mobile */
-      html[data-platform="phone"] .modal-content-container {
-        max-width: 95vw;
-        max-height: 90vh;
-      }
-      html[data-platform="phone"] .note-editor-page-container {
-        height: calc(100vh - 120px); /* Adjust for header */
+      @keyframes confetti-fall {
+         0% { transform: translateY(-100vh) rotate(0deg); }
+         100% { transform: translateY(100vh) rotate(720deg); }
       }
     </style>
     <script>
@@ -233,134 +154,30 @@
               'border-dark': 'var(--color-border-dark)',
             },
             keyframes: {
-              'fade-in': {
-                '0%': { opacity: '0', transform: 'translateY(10px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' },
-              },
-              'fade-in-down': {
-                '0%': { opacity: 0, transform: 'translateY(-20px)' },
-                '100%': { opacity: 1, transform: 'translateY(0)' },
-              },
-               'slide-in-up': {
-                '0%': { opacity: 0, transform: 'translateY(20px)' },
-                '100%': { opacity: 1, transform: 'translateY(0)' },
-              },
-              'slide-in-right': {
-                '0%': { transform: 'translateX(100%)' },
-                '100%': { transform: 'translateX(0)' },
-              },
-              'slide-out-left': {
-                '0%': { transform: 'translateX(0)', opacity: 1 },
-                '100%': { transform: 'translateX(-100%)', opacity: 0 },
-              },
-              'slide-in-from-right': {
-                '0%': { transform: 'translateX(100%)', opacity: 0 },
-                '100%': { transform: 'translateX(0)', opacity: 1 },
-              },
-              'pop-in': {
-                '0%': { transform: 'scale(0.9)', opacity: '0' },
-                '70%': { transform: 'scale(1.05)', opacity: '1' },
-                '100%': { transform: 'scale(1)', opacity: '1' },
-              },
-              'bounce-in': {
-                '0%': { transform: 'scale(0.5)', opacity: '0' },
-                '50%': { transform: 'scale(1.1)' },
-                '70%': { transform: 'scale(0.9)' },
-                '100%': { transform: 'scale(1)', opacity: '1' },
-              },
-              'ring': {
-                '0%, 100%': { transform: 'rotate(0)' },
-                '10%': { transform: 'rotate(15deg)' },
-                '20%': { transform: 'rotate(-10deg)' },
-                '30%': { transform: 'rotate(5deg)' },
-                '40%': { transform: 'rotate(-5deg)' },
-                '50%': { transform: 'rotate(0)' },
-              },
-              'xp-fill': {
-                 '0%': { width: '0%' },
-                 '100%': { width: 'var(--xp-percent)' }
-              },
-              'confetti-fall': {
-                 '0%': { transform: 'translateY(-100vh) rotate(0deg)' },
-                 '100%': { transform: 'translateY(100vh) rotate(720deg)' },
-              },
-              'spin-slow-alt': {
-                'from': { transform: 'rotateX(0deg) rotateY(0deg)' },
-                'to': { transform: 'rotateX(360deg) rotateY(360deg)' },
-              },
-              'float': {
-                '0%, 100%': { transform: 'translateY(0)' },
-                '50%': { transform: 'translateY(-10px)' },
-              },
-              'pulse-soft': {
-                '0%, 100%': { opacity: 1 },
-                '50%': { opacity: 0.7 },
-              },
-              'wave-pulse': {
-                '0%': { transform: 'scale(1)', opacity: '0.6' },
-                '50%': { transform: 'scale(1.5)', opacity: '0' },
-                '100%': { transform: 'scale(1)', opacity: '0' },
-              },
-              'breathing-glow': {
-                '0%, 100%': { boxShadow: '0 0 20px 5px rgba(139, 92, 246, 0.3)' },
-                '50%': { boxShadow: '0 0 40px 15px rgba(139, 92, 246, 0.6)' },
-              }
+              'fade-in': { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+              'slide-in-right': { '0%': { transform: 'translateX(100%)' }, '100%': { transform: 'translateX(0)' } },
+              'pop-in': { '0%': { transform: 'scale(0.85)', opacity: '0' }, '70%': { transform: 'scale(1.03)', opacity: '1' }, '100%': { transform: 'scale(1)', opacity: '1' } },
+              'float': { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-8px)' } },
+              'pulse-soft': { '0%, 100%': { opacity: 1 }, '50%': { opacity: 0.8 } }
             },
             animation: {
-              'fade-in': 'fade-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
-              'fade-in-down': 'fade-in-down 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
-              'slide-in-up': 'slide-in-up 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
-              'slide-in-right': 'slide-in-right 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
-              'slide-out-left': 'slide-out-left 0.5s ease-in-out forwards',
-              'slide-in-from-right': 'slide-in-from-right 0.5s ease-in-out forwards',
-              'pop-in': 'pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
-              'bounce-in': 'bounce-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
-              'ring': 'ring 1s ease-in-out',
-              'xp-fill': 'xp-fill 1s ease-out forwards',
-              'confetti-fall': 'confetti-fall 2s linear forwards',
-              'spin-slow-alt': 'spin-slow-alt 20s linear infinite',
-              'float': 'float 3s ease-in-out infinite',
+              'fade-in': 'fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards',
+              'slide-in-right': 'slide-in-right 0.3s ease-out forwards',
+              'pop-in': 'pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+              'float': 'float 2.5s ease-in-out infinite',
               'pulse-soft': 'pulse-soft 2s ease-in-out infinite',
-              'wave-pulse': 'wave-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite',
-              'breathing-glow': 'breathing-glow 3s ease-in-out infinite',
-            },
-            perspective: {
-                '1000': '1000px',
-            },
-            transformStyle: {
-              'preserve-3d': 'preserve-3d',
-            },
-            backfaceVisibility: {
-              'hidden': 'hidden',
             },
           },
         },
       }
     </script>
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.1.0",
-    "react/": "https://esm.sh/react@^19.1.0/",
-    "react-dom": "https://esm.sh/react-dom@^19.1.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
-    "react-router-dom": "https://esm.sh/react-router-dom@^7.6.3",
-    "@google/genai": "https://esm.sh/@google/genai@^1.9.0",
-    "recharts": "https://esm.sh/recharts@^3.1.0",
-    "howler": "https://esm.sh/howler@^2.2.4"
-  }
-}
-</script>
 </head>
   <body class="antialiased font-sans">
     <div id="root" class="relative z-10"></div>
     <div id="confetti-container" class="fixed inset-0 w-full h-full pointer-events-none z-[100]"></div>
     <div id="modal-container" class="fixed inset-0 pointer-events-none z-[6000]"></div>
-    <audio id="background-music" loop></audio>
-    <div id="toast-container" class="fixed top-5 right-5 z-[5000] space-y-2"></div>
+    <audio id="background-music" loop preload="auto"></audio>
     <script>
-      // This object is used by the Gemini API client. The placeholder below will be 
-      // replaced by your deployment environment (e.g., Netlify) with your actual API key.
       window.process = { env: { API_KEY: "__GEMINI_API_KEY__" } };
     </script>
     <script type="module" src="./index.tsx"></script>

@@ -46,7 +46,7 @@ export const AchievementsPage: React.FC = () => {
     return (
         <div className="space-y-8 animate-fade-in pb-12">
             <div className="text-center mb-10">
-                <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-text-light dark:text-text-dark">
+                <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
                     Achievements
                 </h1>
                 <p className="mt-3 text-lg text-subtle-dark dark:text-subtle-light">
@@ -90,28 +90,43 @@ export const AchievementsPage: React.FC = () => {
                 ))}
             </div>
 
-            {/* Custom Goal Modal */}
+            {/* Custom Goal Modal - Fixed for Accessibility */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-card-light dark:bg-card-dark p-6 rounded-2xl shadow-xl w-full max-w-md animate-pop-in">
-                        <h3 className="text-xl font-bold mb-4">Set a New Goal</h3>
-                        <p className="text-sm text-subtle-dark dark:text-subtle-light mb-4">
-                            Describe a study achievement you want to earn. Our AI will verify if it's realistic and related to learning.
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-start justify-center z-[7000] p-4 pt-12 md:pt-24">
+                    <div className="bg-card-light dark:bg-card-dark p-6 rounded-3xl shadow-2xl w-full max-w-lg animate-pop-in border border-border-light dark:border-border-dark">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-2xl font-bold">Set a New Goal</h3>
+                            <button onClick={() => setIsModalOpen(false)} className="p-2 text-subtle-dark hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors">
+                                {ICONS.close}
+                            </button>
+                        </div>
+                        <p className="text-sm text-subtle-dark dark:text-subtle-light mb-6">
+                            Describe a specific study achievement. Our AI tutor will check if it's educational and help you track it.
                         </p>
                         <textarea
                             value={customGoal}
                             onChange={(e) => setCustomGoal(e.target.value)}
-                            placeholder="e.g. Study Physics for 3 hours straight without a break..."
-                            className="w-full p-3 bg-bg-light dark:bg-bg-dark border border-border-light dark:border-border-dark rounded-lg mb-4 h-24 resize-none"
+                            placeholder="e.g. Solve 50 complex calculus problems by Friday..."
+                            className="w-full p-4 bg-bg-light dark:bg-bg-dark border border-border-light dark:border-border-dark rounded-2xl mb-6 h-32 resize-none focus:ring-2 focus:ring-primary-light outline-none text-text-light dark:text-text-dark font-medium"
                         />
-                        <div className="flex justify-end gap-3">
-                            <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-semibold rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">Cancel</button>
+                        <div className="flex gap-3">
+                            <button 
+                                onClick={() => setIsModalOpen(false)} 
+                                className="flex-1 py-3 text-sm font-bold rounded-xl border border-border-light dark:border-border-dark hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                            >
+                                Cancel
+                            </button>
                             <button 
                                 onClick={handleCreateGoal} 
                                 disabled={isValidating || !customGoal.trim()}
-                                className="px-4 py-2 text-sm font-semibold bg-primary-light text-white rounded-lg disabled:opacity-50"
+                                className="flex-1 py-3 text-sm font-bold bg-primary-light text-white rounded-xl shadow-lg shadow-primary-light/30 disabled:opacity-50 flex items-center justify-center gap-2"
                             >
-                                {isValidating ? 'Validating...' : 'Create Goal'}
+                                {isValidating ? (
+                                    <>
+                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                        Validating...
+                                    </>
+                                ) : 'Add Goal'}
                             </button>
                         </div>
                     </div>

@@ -6,18 +6,20 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import { NotificationContext } from '../contexts/NotificationContext';
 import { SoundContext } from '../contexts/SoundContext';
 import { ICONS, PAPER_STYLES, SUBJECTS } from '../constants';
+import { NoteContextType, ThemeContextType, NotificationContextType, SoundContextType } from '../types';
 
 export const NoteEditorPage: React.FC = () => {
     const { noteId } = useParams<{ noteId: string }>();
     const navigate = useNavigate();
-    const { getNoteById, addNote, updateNote } = useContext(NoteContext)!;
-    const { paperStyle, setPaperStyle } = useContext(ThemeContext)!;
-    const { addToast } = useContext(NotificationContext)!;
-    const { playSound } = useContext(SoundContext)!;
+    const { getNoteById, addNote, updateNote } = useContext(NoteContext) as NoteContextType;
+    const { paperStyle, setPaperStyle } = useContext(ThemeContext) as ThemeContextType;
+    const { addToast } = useContext(NotificationContext) as NotificationContextType;
+    const { playSound } = useContext(SoundContext) as SoundContextType;
 
     const [title, setTitle] = useState('');
     const [subject, setSubject] = useState('General');
     const editorRef = useRef<HTMLDivElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (noteId) {
@@ -70,12 +72,18 @@ export const NoteEditorPage: React.FC = () => {
         playSound('click');
     };
 
-    const removeHighlight = () => {
-        // Attempt multiple methods to ensure background color is removed
-        document.execCommand('hiliteColor', false, 'transparent');
-        document.execCommand('removeFormat'); 
-        editorRef.current?.focus();
-        playSound('delete');
+    const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if (e.target?.result) {
+                    execCmd('insertImage', e.target.result as string);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+        if (event.target) event.target.value = ''; // Reset
     };
 
     return (
@@ -86,13 +94,13 @@ export const NoteEditorPage: React.FC = () => {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Note Title"
-                    className="w-full md:flex-1 text-2xl font-bold bg-transparent border-none focus:ring-0 focus:outline-none placeholder-slate-400 dark:placeholder-slate-600"
+                    className="w-full md:flex-1 text-3xl font-extrabold bg-transparent border-none focus:ring-0 focus:outline-none placeholder-slate-300 dark:placeholder-slate-600 text-slate-800 dark:text-white"
                 />
-                <div className="flex items-center gap-2 w-full md:w-auto">
+                <div className="flex items-center gap-3 w-full md:w-auto">
                      <select
                         value={subject}
                         onChange={(e) => setSubject(e.target.value)}
-                        className="flex-1 md:flex-none bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-light"
+                        className="flex-1 md:flex-none bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-primary-light shadow-sm"
                     >
                         {['General', ...SUBJECTS].map(sub => (
                             <option key={sub} value={sub}>{sub}</option>
@@ -100,51 +108,66 @@ export const NoteEditorPage: React.FC = () => {
                     </select>
                     <button
                         onClick={handleSave}
-                        className="px-6 py-2 bg-primary-light text-white font-bold rounded-lg shadow-md hover:opacity-90 transition-all active:scale-95 whitespace-nowrap"
+                        className="px-6 py-2.5 bg-primary-light text-white font-bold rounded-xl shadow-lg shadow-primary-light/30 hover:opacity-90 transition-all active:scale-95 whitespace-nowrap"
                     >
-                        Save
+                        Save Note
                     </button>
                 </div>
             </div>
 
             {/* Toolbar */}
-            <div className="mb-4 flex flex-wrap gap-2 items-center bg-card-light dark:bg-card-dark p-2 rounded-xl shadow-sm border border-border-light dark:border-border-dark">
-                <button onClick={() => execCmd('bold')} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors font-bold" title="Bold">B</button>
-                <button onClick={() => execCmd('italic')} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors italic" title="Italic">I</button>
-                <button onClick={() => execCmd('underline')} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors underline" title="Underline">U</button>
-                <div className="w-px h-6 bg-border-light dark:bg-border-dark mx-1"></div>
-                <button onClick={() => execCmd('insertUnorderedList')} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors" title="Bullet List">{React.cloneElement(ICONS.list, {className: "w-5 h-5"})}</button>
-                <div className="w-px h-6 bg-border-light dark:bg-border-dark mx-1"></div>
-                <button 
-                    onClick={() => execCmd('hiliteColor', 'yellow')} 
-                    className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors flex items-center gap-1"
-                    title="Highlight"
-                >
-                    <span className="w-4 h-4 bg-yellow-300 rounded-full border border-slate-300"></span>
-                </button>
-                <button 
-                    onClick={removeHighlight} 
-                    className="px-3 py-1 text-xs font-bold text-red-500 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 rounded transition-colors"
-                    title="Remove Highlight / Formatting"
-                >
-                    Clear Format
-                </button>
+            <div className="mb-4 flex flex-wrap gap-2 items-center bg-white dark:bg-slate-800 p-2 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
+                <div className="flex gap-1 border-r border-slate-200 dark:border-slate-700 pr-2 mr-1">
+                    <button onClick={() => execCmd('formatBlock', 'H1')} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors font-black text-lg" title="Heading 1">H1</button>
+                    <button onClick={() => execCmd('formatBlock', 'H2')} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors font-bold text-base" title="Heading 2">H2</button>
+                    <button onClick={() => execCmd('formatBlock', 'H3')} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors font-semibold text-sm" title="Heading 3">H3</button>
+                </div>
+
+                <div className="flex gap-1 border-r border-slate-200 dark:border-slate-700 pr-2 mr-1">
+                    <button onClick={() => execCmd('bold')} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors font-bold" title="Bold">B</button>
+                    <button onClick={() => execCmd('italic')} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors italic" title="Italic">I</button>
+                    <button onClick={() => execCmd('underline')} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors underline" title="Underline">U</button>
+                </div>
+
+                <div className="flex gap-1 border-r border-slate-200 dark:border-slate-700 pr-2 mr-1">
+                    <button onClick={() => execCmd('insertUnorderedList')} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors" title="Bullet List">{React.cloneElement(ICONS.list, {className: "w-5 h-5"})}</button>
+                    <button onClick={() => execCmd('insertOrderedList')} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors font-mono" title="Numbered List">1.</button>
+                </div>
+
+                <div className="flex gap-1 items-center border-r border-slate-200 dark:border-slate-700 pr-2 mr-1">
+                    <button onClick={() => execCmd('hiliteColor', '#fde047')} className="w-6 h-6 rounded-full bg-yellow-300 border border-slate-300 hover:scale-110 transition-transform" title="Yellow Highlight"></button>
+                    <button onClick={() => execCmd('hiliteColor', '#86efac')} className="w-6 h-6 rounded-full bg-green-300 border border-slate-300 hover:scale-110 transition-transform" title="Green Highlight"></button>
+                    <button onClick={() => execCmd('hiliteColor', '#93c5fd')} className="w-6 h-6 rounded-full bg-blue-300 border border-slate-300 hover:scale-110 transition-transform" title="Blue Highlight"></button>
+                    <button onClick={() => execCmd('hiliteColor', 'transparent')} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-xs font-bold text-slate-500" title="Remove Highlight">
+                        No Color
+                    </button>
+                </div>
+
+                <div className="flex gap-1 items-center">
+                    <input type="file" ref={fileInputRef} onChange={handleImageUpload} accept="image/*" className="hidden" />
+                    <button onClick={() => fileInputRef.current?.click()} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors" title="Insert Image">
+                        {React.cloneElement(ICONS.upload, { className: "w-5 h-5" })}
+                    </button>
+                    <button onClick={() => execCmd('removeFormat')} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Clear Formatting">
+                        {React.cloneElement(ICONS.close, { className: "w-5 h-5" })}
+                    </button>
+                </div>
                 
                 <div className="flex-grow"></div>
-                {/* Paper Style Selector */}
-                <div className="flex gap-1 overflow-x-auto max-w-[150px] md:max-w-none scrollbar-hide">
+                
+                <div className="flex gap-2 overflow-x-auto max-w-[150px] md:max-w-none scrollbar-hide py-1">
                     {PAPER_STYLES.map(style => (
                         <button
                             key={style.name}
                             onClick={() => { playSound('click'); setPaperStyle(style); }}
-                            className={`w-6 h-6 rounded-full border flex-shrink-0 ${paperStyle.name === style.name ? 'border-primary-light ring-1 ring-primary-light' : 'border-slate-300'} ${style.preview}`}
+                            className={`w-6 h-6 rounded-full border flex-shrink-0 transition-all ${paperStyle.name === style.name ? 'border-primary-light ring-2 ring-primary-light scale-110' : 'border-slate-300 hover:scale-110'} ${style.preview}`}
                             title={style.name}
                         />
                     ))}
                 </div>
             </div>
 
-            <div className={`flex-grow rounded-xl shadow-inner border border-border-light dark:border-border-dark overflow-hidden relative ${paperStyle.className}`}>
+            <div className={`flex-grow rounded-2xl shadow-inner border border-slate-200 dark:border-slate-700 overflow-hidden relative ${paperStyle.className}`}>
                 <div
                     ref={editorRef}
                     contentEditable

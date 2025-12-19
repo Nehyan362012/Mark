@@ -41,7 +41,7 @@ export const LanguageArcadePage: React.FC = () => {
                             className={`group relative bg-card-light dark:bg-card-dark rounded-3xl shadow-lg p-6 flex flex-col items-center text-center transition-all duration-300 transform-style-preserve-3d hover:[transform:translateY(-8px)_rotateY(10deg)] cursor-pointer hover:shadow-2xl card-stable`}
                         >
                             <div className={`p-5 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 text-white mb-4 transition-transform duration-300 group-hover:scale-110`}>
-                                {React.cloneElement(puzzle.icon, { className: 'w-12 h-12' })}
+                                {React.isValidElement(puzzle.icon) ? React.cloneElement(puzzle.icon as React.ReactElement<any>, { className: 'w-12 h-12' }) : puzzle.icon}
                             </div>
                             <h3 className="text-2xl font-bold">{puzzle.title}</h3>
                             <p className="text-subtle-dark dark:text-subtle-light mt-2 flex-grow">{puzzle.description.replace('Urdu', language)}</p>
